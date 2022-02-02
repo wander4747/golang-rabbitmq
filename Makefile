@@ -8,7 +8,7 @@ docker: ## Executa os serviços no docker-compose
 	docker-compose up -d
 
 hello-sender:
-	docker-compose exec go cd/src & go mod tidy && go run 1-hello/main.go sender
+	docker-compose exec go cd/src & go mod tidy && go run hello/main.go sender
 
 hello-receive:
-	docker-compose exec go cd/src & go mod tidy && go run 1-hello/main.go receive
+	docker-compose exec go cd/src & go mod tidy && go run hello/main.go receive

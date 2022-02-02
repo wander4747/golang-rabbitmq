@@ -37,7 +37,7 @@ func sender() {
 	queue, err := queueDeclare("hello", err, channel)
 	failOnError(err, "Failed to declare a queue")
 
-	for i := 0; i <= 100000; i++ {
+	for i := 0; i < 100000; i++ {
 		body := fmt.Sprintf("message n° %v", i)
 
 		err = channel.Publish(
