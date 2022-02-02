@@ -21,3 +21,13 @@ make hello-sender
 ```shell
 make hello-receive
 ```
+
+
+#### Enviando e consumindo com exchange fanout
+```shell
+make fanout-sender
+```
+
+```shell
+make fanout-receive
+```

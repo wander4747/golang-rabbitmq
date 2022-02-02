@@ -12,3 +12,11 @@ hello-sender:
 
 hello-receive:
 	docker-compose exec go cd/src & go mod tidy && go run hello/main.go receive
+
+
+fanout-sender:
+	docker-compose exec go cd/src & go mod tidy && go run exchange/fanout/main.go sender
+
+fanout-receive:
+	docker-compose exec go cd/src & go mod tidy && go run exchange/fanout/main.go receive
+

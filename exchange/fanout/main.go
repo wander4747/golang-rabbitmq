@@ -9,7 +9,6 @@ import (
 )
 
 func main() {
-
 	args := os.Args
 
 	if len(args) == 1 {
@@ -34,25 +33,33 @@ func sender() {
 
 	defer channel.Close()
 
-	queue, err := queueDeclare("hello", err, channel)
-	failOnError(err, "Failed to declare a queue")
+	err = channel.ExchangeDeclare(
+		"logs",   // name
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
 
 	for i := 0; i < 100000; i++ {
 		body := fmt.Sprintf("message n° %v", i)
-
 		err = channel.Publish(
-			"",         // exchange
-			queue.Name, // routing key
-			false,      // mandatory
-			false,      // immediate
+			"logs", // exchange
+			"",     // routing key
+			false,  // mandatory
+			false,  // immediate
 			amqp.Publishing{
 				DeliveryMode: amqp.Persistent,
 				ContentType:  "text/plain",
 				Body:         []byte(body),
 			})
+
 		failOnError(err, "Failed to publish a message")
 
-		log.Printf("Send a message: %s", body)
+		log.Printf(" [x] Sent %s", body)
 	}
 }
 
@@ -63,8 +70,29 @@ func receive() {
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	defer channel.Close()
-	queue, err := queueDeclare("hello", err, channel)
+
+	err = channel.ExchangeDeclare(
+		"logs",   // name
+		"fanout", // type
+		true,     // durable
+		false,    // auto-deleted
+		false,    // internal
+		false,    // no-wait
+		nil,      // arguments
+	)
+	failOnError(err, "Failed to declare an exchange")
+
+	queue, err := queueDeclare("logs", err, channel)
 	failOnError(err, "Failed to declare a queue")
+
+	err = channel.QueueBind(
+		queue.Name, // queue name
+		"",         // routing key
+		"logs",     // exchange
+		false,
+		nil,
+	)
+	failOnError(err, "Failed to bind a queue")
 
 	msgs, err := channel.Consume(
 		queue.Name, // queue
@@ -81,11 +109,11 @@ func receive() {
 
 	go func() {
 		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
+			log.Printf(" [x] %s", d.Body)
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	log.Printf(" [*] Waiting for logs. To exit press CTRL+C")
 	<-forever
 }
 
