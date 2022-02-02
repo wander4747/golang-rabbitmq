@@ -51,6 +51,8 @@ func sender() {
 				Body:         []byte(body),
 			})
 		failOnError(err, "Failed to publish a message")
+
+		log.Printf("Send a message: %s", body)
 	}
 }
 
@@ -88,7 +90,7 @@ func receive() {
 }
 
 func connect() (*amqp.Connection, *amqp.Channel, error) {
-	connection, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
+	connection, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	channel, err := connection.Channel()
