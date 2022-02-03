@@ -31,3 +31,13 @@ make fanout-sender
 ```shell
 make fanout-receive
 ```
+
+
+#### Enviando e consumindo com exchange direct
+```shell
+make direct-sender arg=warning
+```
+
+```shell
+make direct-receive arg=warning
+```
